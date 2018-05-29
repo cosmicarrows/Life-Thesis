@@ -9,17 +9,24 @@
 import Foundation
 
 
-class Person {
+struct Person {
     let firstName: String
     let lastName: String
+    let nickName: String
     
-    init(firstName: String, lastName: String) {
-        self.firstName = firstName
-        self.lastName = lastName
+    func changeNickName(nickName: String) -> Person {
+        return Person.init(firstName: firstName, lastName: lastName, nickName: nickName)
     }
 }
 
-class Journal {
+extension Person {
+    
+    init(firstName: String, lastName: String) {
+        self.init(firstName: firstName, lastName: lastName, nickName: "")
+    }
+}
+
+class JournalEntry {
     let title: String
     let text: String
     let date: NSDate
@@ -30,4 +37,33 @@ class Journal {
         self.date = NSDate()
     }
 }
+
+
+class DangerousWorker {
+    var entries: [JournalEntry]
+    
+    init() {
+        //add test entries
+        let entry = JournalEntry.init(title: "Walking", text: "I was walking in the loop")
+        entries = Array.init(repeating: entry, count: 100)
+    }
+    
+    func dangerousMultithreading() {
+        
+      
+        
+        
+        DispatchQueue.global(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0).async() {
+            sleep(1) //emulate work
+            self.entries.removeAll()
+        }
+        
+        NSLog("Start Main")
+        for _ in 0..<entries.endIndex {
+            entries.removeLast() //crash
+            sleep(1) //emulate work
+        }
+    }
+}
+
 
