@@ -26,6 +26,23 @@ extension Person {
     }
 }
 
+struct Journal {
+    let owner: Person
+    var entries: [JournalEntry]
+    
+    mutating func addEntry(title: String, text: String) {
+        let entry = JournalEntry.init(title: title, text: text)
+        entries.append(entry)
+    }
+}
+
+extension Journal {
+    init(owner: Person) {
+        self.owner = owner
+        self.entries = []
+    }
+}
+
 class JournalEntry {
     let title: String
     let text: String
@@ -38,32 +55,17 @@ class JournalEntry {
     }
 }
 
-
-class DangerousWorker {
-    var entries: [JournalEntry]
+class JournalController {
+    var journal: Journal
     
-    init() {
-        //add test entries
-        let entry = JournalEntry.init(title: "Walking", text: "I was walking in the loop")
-        entries = Array.init(repeating: entry, count: 100)
+    init(owner: Person) {
+        self.journal = Journal.init(owner: owner)
     }
     
-    func dangerousMultithreading() {
-        
-      
-        
-        
-        DispatchQueue.global(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0).async() {
-            sleep(1) //emulate work
-            self.entries.removeAll()
-        }
-        
-        NSLog("Start Main")
-        for _ in 0..<entries.endIndex {
-            entries.removeLast() //crash
-            sleep(1) //emulate work
-        }
+    func addEntry(title: String, text: String) {
+        journal.addEntry(title: title, text: text)
     }
 }
+
 
 
